@@ -619,7 +619,11 @@ function removecrewConfirmed(myunit) {
 					if (tFilterCheck.indexOf(crewmerits[removedcrew][ii]) != -1) { showTC = true; break; }
 				}
 			} 
-		} else if (FilterOptions["NMC"] != "show") { showTC = false; }
+		} else if (FilterOptions["NMC"] == "hide") { showTC = false; }
+
+		if (showTC) {
+			if (FilterOptions["NMC"] == "under") { showTC = (typeof crewmerits[i] == "undefined") || (crewmerits[i].length < 3);  }
+		}
 
 		if (showTC) {
 			document.getElementById("crewDIV" + removedcrew).style.visibility="visible";
@@ -824,42 +828,6 @@ function activateUnit(myunit) {
 }
 
 function applyFilter() {
-//	for (var i=0;i<unitNamesArray.length;i++) { 
-//		if (unittypes.indexOf(i) != -1) {
-//			showTU = true;
-//			if (FilterUnitsExp.indexOf(unitexpansionG[i]) != -1) { showTU = false;  }
-//			if (FilterUnitsCmp.indexOf(unitComplexityArray[i]) != -1) { showTU = false;  }
-//			
-//			if (!document.getElementById("unitGroup"+i)) { isUGroup = false; }
-//			else { isUGroup = true; }
-//
-//			if (showTU) {
-//				if (isUGroup) {
-//					document.getElementById("unitGroup"+i).style.visibility = "visible";
-//					if (fx) { document.getElementById("unitGroup"+i).style.display="table-cell"; }
-//					else { document.getElementById("unitGroup"+i).style.display="block"; }
-//				} else {
-//					document.getElementById("unitCell"+i+"x1").style.visibility = "visible";
-//					if (fx) { document.getElementById("unitCell"+i+"x1").style.display="table-cell"; }
-//					else { document.getElementById("unitCell"+i+"x1").style.display="block"; }
-//				}
-//			} else {
-//				if (isUGroup) {
-//					if (document.getElementById("unitCell"+i+"x1")) {
-//						groupCount = (unittypes.lastIndexOf(i) - unittypes.indexOf(i)) + 1;
-//						hideGroup(i,groupCount);
-//					}
-//					
-//					document.getElementById("unitGroup"+i).style.visibility = "hidden";
-//					document.getElementById("unitGroup"+i).style.display = "none";	
-//				} else {
-//					document.getElementById("unitCell"+i+"x1").style.visibility = "hidden";
-//					document.getElementById("unitCell"+i+"x1").style.display = "none";	
-//				}
-//			}
-//		}
-//	}
-
 	for (var i=0;i<crewids.length;i++) { 
 		document.getElementById("crewDIV"+i).style.visibility = "hidden";
 		document.getElementById("crewDIV"+i).style.display = "none";
@@ -882,8 +850,12 @@ function applyFilter() {
 					if (tFilterCheck.indexOf(crewmerits[i][ii]) != -1) { showTC = true; break; }
 				}
 			} 
-		} else if (FilterOptions["NMC"] != "show") { showTC = false; } }
-		
+		} else if (FilterOptions["NMC"] == "hide") { showTC = false; } }
+
+		if (showTC) {
+			if (FilterOptions["NMC"] == "under") { showTC = (typeof crewmerits[i] == "undefined") || (crewmerits[i].length < 3);  }
+		}
+
 		if (showTC) {
 			document.getElementById("crewDIV"+i).style.visibility = "visible";
 			if (fx) { document.getElementById("crewDIV"+i).style.display="table-cell"; }
@@ -974,7 +946,8 @@ function drawFilter() {
 	else { mytext+="[ <a href=\"javascript:toggleFilter('MF');\" class='greentextb'>At least these Merits</a> ]"; }
 
 	if (FilterOptions["NMC"] == "show") { mytext+="[ <a href=\"javascript:toggleFilter('NMC');\" class='helptextb'>Showing No-merit Crews</a> ]"; }
-	else { mytext+="[ <a href=\"javascript:toggleFilter('NMC');\" class='greentextb'>Hiding No-merit Crews</a> ]"; }
+	else if(FilterOptions["NMC"] == "under") { mytext+="[ <a href=\"javascript:toggleFilter('NMC');\" class='goldtextb'>Showing <3 Merit Crews</a> ]"; }
+	else if(FilterOptions["NMC"] == "hide") { mytext+="[ <a href=\"javascript:toggleFilter('NMC');\" class='greentextb'>Hiding No-merit Crews</a> ]"; }
 
 	mytext+="<br><img src='" + imgPath + "pixel.gif' width='1' height='8'><br><span class='unittextb'>Filter Mods</span>:<br><img src='" + imgPath + "pixel.gif' width='1' height='4'><br>";
 	if (FilterModsExp.indexOf("X") != -1) { modCSS = "filter:alpha(opacity=25);opacity:.25;"; } else { modCSS = ""; }
@@ -1033,8 +1006,15 @@ function setFilter(fId,fType) {
 }
 
 function toggleFilter(myToggle) {
-	if (myToggle == "MF") { if (FilterOptions["MF"] == "only") {FilterOptions["MF"] = "has";} else {FilterOptions["MF"] = "only";} }
-	else if (myToggle == "NMC") { if (FilterOptions["NMC"] == "show") {FilterOptions["NMC"] = "hide";} else {FilterOptions["NMC"] = "show";} }
+	if (myToggle == "MF") {
+		if (FilterOptions["MF"] == "only") {FilterOptions["MF"] = "has";}
+		else {FilterOptions["MF"] = "only";}
+	}
+	else if (myToggle == "NMC") {
+		if (FilterOptions["NMC"] == "show") {FilterOptions["NMC"] = "under";}
+		else if (FilterOptions["NMC"] == "under") {FilterOptions["NMC"] = "hide";}
+		else {FilterOptions["NMC"] = "show";}
+	}
 
 	applyFilter();
 	drawFilter();
